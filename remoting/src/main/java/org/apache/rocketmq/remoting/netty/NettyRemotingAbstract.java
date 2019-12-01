@@ -233,10 +233,12 @@ public abstract class NettyRemotingAbstract {
             };
 
             if (pair.getObject1().rejectRequest()) {
-                final RemotingCommand response = RemotingCommand.createResponseCommand(RemotingSysResponseCode.SYSTEM_BUSY,
-                    "[REJECTREQUEST]system busy, start flow control for a while");
-                response.setOpaque(opaque);
-                ctx.writeAndFlush(response);
+                if (!cmd.isOnewayRPC()) {
+                    final RemotingCommand response = RemotingCommand.createResponseCommand(RemotingSysResponseCode.SYSTEM_BUSY,
+                            "[REJECTREQUEST]system busy, start flow control for a while");
+                    response.setOpaque(opaque);
+                    ctx.writeAndFlush(response);
+                }
                 return;
             }
 
